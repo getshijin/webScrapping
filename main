@@ -1,0 +1,32 @@
+__author__ = 'Shijin MS'
+
+import requests
+import json
+
+url = "Website API"
+keywords = ["otwoo","jhfvgc","Hair fall shampoo", "Conditioner", "Shampoo"]
+brands = ["loreal", "dove", "tresemme","hgdf","otwoo"]
+result = {"result": []}
+
+for keyword in keywords:
+    print(keyword)
+    count = 0
+    page = 1
+    temp_item = {"keyword": keyword, "position": {}}
+    while count < 100 and page <5:
+        fetch_url = url.format(keyword.replace(" ", "%20"), page)
+        #print(fetch_url)
+        response = requests.get(fetch_url).json()
+#        response_json = json.loads(response.text)
+        for item in response["items"]:
+            count += 1
+            if item["brand_name"].split()[0].lower().replace("'","") in brands and item["brand_name"].split()[0].lower().replace("'","") not in temp_item["position"]:
+                temp_item["position"][item["brand_name"].split()[0].lower().replace("'","")] = count
+
+        page += 1
+    if temp_item["position"].keys() not in brands:
+        for i in brands:
+            if i not in temp_item["position"]:
+                temp_item["position"][i] = -1
+    result["result"].append(temp_item)
+print(result)
